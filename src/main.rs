@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, window::PresentMode};
 use bevy_rapier2d::prelude::*;
 use bevy_egui::{egui, EguiContexts, EguiPlugin};
 

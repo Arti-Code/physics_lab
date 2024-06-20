@@ -1,0 +1,15 @@
+***PHYSICS LAB***
+Artur Gwoździowski
+2024 yr
+
+CHANGELOG
+
+v0.1.0:
+* initializing project
+* importing some packages
+* setup compilator and linker
+* first build
+* setup github repository
+
+v0.1.1:
+

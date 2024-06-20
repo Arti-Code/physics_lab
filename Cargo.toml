@@ -2,6 +2,8 @@
 name = "physics_lab"
 version = "0.1.0"
 edition = "2021"
+authors = ["Artur Gwoździowski <gwozdyk@gmail.com>"]
+description = "Physics based sandbox simulation in 2D with Bevy Game Engine, Rapier2D Physics Engine and Egui User Interface"
 
 [dependencies]
 bevy = "0.13.2"
