@@ -12,20 +12,71 @@ pub struct WallPlugin;
 
 impl Plugin for WallPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, create_wall); 
+        app.add_systems(Startup, (create_wall0, create_wall1, create_wall2, create_wall3)); 
     }
 }
 
 
-fn create_wall(
+fn create_wall0(
     mut commands: Commands, 
     meshes: ResMut<Assets<Mesh>>, 
     materials: ResMut<Assets<ColorMaterial>>, 
 ) {
-    let wall = WallBundle::new(meshes, materials, Color::GRAY, vec2(0.0, 280.0), 400.0, 20.0);
-    commands.spawn((wall));
+    let wall0 = WallBundle::new(
+        meshes, 
+        materials, 
+        Color::GRAY, 
+        vec2(0.0, -300.0), 
+        400.0, 
+        5.0
+    );
+    commands.spawn((wall0));
 }
-
+fn create_wall1(
+    mut commands: Commands, 
+    meshes: ResMut<Assets<Mesh>>, 
+    materials: ResMut<Assets<ColorMaterial>>, 
+) {
+    let wall0 = WallBundle::new(
+        meshes, 
+        materials, 
+        Color::GRAY, 
+        vec2(0.0, 300.0), 
+        400.0, 
+        5.0
+    );
+    commands.spawn((wall0));
+}
+fn create_wall2(
+    mut commands: Commands, 
+    meshes: ResMut<Assets<Mesh>>, 
+    materials: ResMut<Assets<ColorMaterial>>, 
+) {
+    let wall0 = WallBundle::new(
+        meshes, 
+        materials, 
+        Color::GRAY, 
+        vec2(-400.0, 0.0), 
+        5.0, 
+        300.0
+    );
+    commands.spawn((wall0));
+}
+fn create_wall3(
+    mut commands: Commands, 
+    meshes: ResMut<Assets<Mesh>>, 
+    materials: ResMut<Assets<ColorMaterial>>, 
+) {
+    let wall0 = WallBundle::new(
+        meshes, 
+        materials, 
+        Color::GRAY, 
+        vec2(400.0, 0.0), 
+        5.0, 
+        300.0
+    );
+    commands.spawn((wall0));
+}
 
 
 #[derive(Component, Debug)]
@@ -37,11 +88,20 @@ struct WallBundle {
     mesh: MaterialMesh2dBundle<ColorMaterial>,
     collider: Collider,
     rigidbody: RigidBody,
+    friction: Friction,
+    restitution: Restitution,
 }
 
 impl WallBundle {
 
-    fn new(mut meshes: ResMut<Assets<Mesh>>, mut materials: ResMut<Assets<ColorMaterial>>, color: Color, pos: Vec2, half_x: f32, half_y: f32) -> Self {
+    fn new(
+        mut meshes: ResMut<Assets<Mesh>>, 
+        mut materials: ResMut<Assets<ColorMaterial>>, 
+        color: Color, 
+        pos: Vec2, 
+        half_x: f32, 
+        half_y: f32
+    ) -> Self {
         WallBundle {
             wall: Wall,
             mesh: MaterialMesh2dBundle {
@@ -52,6 +112,8 @@ impl WallBundle {
             },
             collider: Collider::cuboid(half_x, half_y),
             rigidbody: RigidBody::Fixed,
+            friction: Friction::coefficient(0.0),
+            restitution: Restitution::coefficient(1.0),
         }
     }
 

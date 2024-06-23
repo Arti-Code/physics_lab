@@ -4,9 +4,12 @@ mod gui;
 mod my_images;
 mod particle;
 mod wall;
+mod signal;
 
 use std::ops::RangeInclusive;
 
+use bevy::core_pipeline::bloom::{BloomPrefilterSettings, BloomSettings};
+use bevy::core_pipeline::tonemapping::Tonemapping;
 use bevy::{
     prelude::*, 
     render::render_resource::Texture, 
@@ -18,6 +21,7 @@ use crate::gui::GUIPlugin;
 use crate::my_images::MyImagesPlugin;
 use crate::particle::ParticlePlugin;
 use crate::wall::WallPlugin;
+use crate::signal::*;
 use bevy_rapier2d::prelude::*;
 
 fn main() {
@@ -41,6 +45,7 @@ fn main() {
         }))
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
         //.add_plugins(RapierDebugRenderPlugin::default())
+        .add_plugins(SignalPlugin)
         .add_plugins(EguiPlugin)
         .add_plugins(GUIPlugin)    
         .add_plugins(MyImagesPlugin)
@@ -52,7 +57,29 @@ fn main() {
 
 
 fn setup(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn((
+        Camera2dBundle {
+            camera: Camera {
+                hdr: true,
+                ..default()
+            },
+            tonemapping: Tonemapping::TonyMcMapface,
+            ..default()
+        },
+        BloomSettings {
+            intensity: 0.9,
+            low_frequency_boost: 0.1,
+            high_pass_frequency: 0.6,
+            prefilter_settings: BloomPrefilterSettings {
+                threshold: 0.25,
+                threshold_softness: 0.7,
+            },
+            composite_mode: bevy::core_pipeline::bloom::BloomCompositeMode::Additive,
+            low_frequency_boost_curvature: 0.5,
+            ..Default::default()
+        },
+    ));
+    //commands.spawn(cam);
 }
 
 #[derive(Resource)]
