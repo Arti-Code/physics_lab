@@ -5,7 +5,6 @@ use bevy::prelude::*;
 use bevy::sprite::{MaterialMesh2dBundle, Mesh2dHandle};
 use bevy_rapier2d::prelude::*;
 
-//use shape::Circle;
 use rand::prelude::*;
 use rand::{Rng, thread_rng};
 
@@ -16,10 +15,10 @@ pub struct ParticlePlugin;
 
 impl Plugin for ParticlePlugin {
     fn build(&self, app: &mut App) {
-        //app.add_systems(Startup, create_particle); 
         app.add_systems(Update, (
             create_particle,
             collision_events_system,
+            draw_primitives2d_system,
         ));        
     }
 }
@@ -27,13 +26,11 @@ impl Plugin for ParticlePlugin {
 
 fn create_particle(
     mut commands: Commands, 
-    meshes: ResMut<Assets<Mesh>>, 
-    materials: ResMut<Assets<ColorMaterial>>, 
-    //time: Res<Time>,
+    mut meshes: ResMut<Assets<Mesh>>, 
+    mut materials: ResMut<Assets<ColorMaterial>>, 
     diameter: Res<Diameter>,
     mut add_particle: ResMut<AddParticle>,
 ) {
-    //if thread_rng().gen_bool(time.delta_seconds_f64()*3.0) {
     if add_particle.is_high() {
         add_particle.set_low();
         let colors = [
@@ -43,10 +40,21 @@ fn create_particle(
             Color::YELLOW,
             Color::ORANGE,
         ];
-        //colors.sample();
         let color = colors[thread_rng().gen_range(0..colors.len())];
-        let particle = ParticleBundle::new(meshes, materials, color, diameter);
-        commands.spawn((particle)).id();
+        let particle = ParticleBundle::new(
+            &mut meshes, 
+            &mut materials, 
+            color, 
+            diameter
+        );
+        commands.spawn((particle)).with_children(|children| {
+            let force_field = ForceFieldBundle::new_magnetic( 
+                100.0, 
+                40.0, 
+                0.5
+            );
+            children.spawn(force_field);
+        });
     }
 }
 
@@ -59,7 +67,6 @@ fn collision_events_system(
         match collision_event {
             CollisionEvent::Started(e1, e2, _) => {
                 if particles.contains(*e1) && particles.contains(*e2) {
-                    //println!("particles collision!");
                     let (_, t1, j1) = particles.get(*e1).unwrap();
                     let (_, t2, j2) = particles.get(*e2).unwrap();
                     if j1.is_some() || j2.is_some() { continue; }
@@ -92,17 +99,15 @@ struct ParticleBundle {
     restitution: Restitution,
     dumping: Damping,
     velocity: Velocity,
-    // mass_properties: MassProperties,
 }
 
 impl ParticleBundle {
 
     fn new(
-        mut meshes: ResMut<Assets<Mesh>>, 
-        mut materials: ResMut<Assets<ColorMaterial>>, 
+        meshes: &mut ResMut<Assets<Mesh>>, 
+        materials: &mut ResMut<Assets<ColorMaterial>>, 
         color: Color, 
         diameter: Res<Diameter>,
-        
     ) -> Self {
         let x = thread_rng().gen_range(diameter.w.clone());
         let y = thread_rng().gen_range(diameter.h.clone());
@@ -124,8 +129,70 @@ impl ParticleBundle {
                 linear_damping: 0.0,
                 angular_damping: 0.0,
             },
-            velocity: Velocity::linear(vec2(thread_rng().gen_range(-1.0..=1.0), thread_rng().gen_range(-1.0..=1.0)) *500.0),
+            velocity: Velocity::linear(
+        vec2(
+                thread_rng().gen_range(-1.0..=1.0), 
+                thread_rng().gen_range(-1.0..=1.0)) *500.0
+            ),
         }
     }
 
+}
+
+
+pub struct Magnetic {
+    pub strength: f32,
+    pub maximum: f32,
+    pub range: f32,
+}
+
+pub struct Neutral;
+
+#[derive(Component, Debug)]
+pub enum ForceField {
+    Neutral,
+    Magnetic{f: f32, r: f32, max: f32},
+}
+
+#[derive(Bundle)]
+pub struct ForceFieldBundle {
+    field: ForceField,
+    collider: Collider,
+    sensor: Sensor,
+}
+
+
+impl ForceFieldBundle {
+
+    pub fn new_magnetic(
+        strength: f32, 
+        range: f32, 
+        maximum: f32
+    ) -> Self {
+        let field = ForceField::Magnetic { f: strength, r: range, max: maximum };
+        ForceFieldBundle {
+            field,
+            collider: Collider::ball(range),
+            sensor: Sensor,
+        }        
+    }
+
+    pub fn new_neutral() -> Self {
+        ForceFieldBundle {
+            field: ForceField::Neutral,
+            collider: Collider::ball(0.0),
+            sensor: Sensor,
+        }
+    }
+}
+
+fn draw_primitives2d_system(fields: Query<(&ForceField, &GlobalTransform), With<ForceField>>, mut gizmos: Gizmos) {
+    for (field, gtf) in fields.iter() {
+        match field {
+            ForceField::Magnetic { f, r, max } => {
+                gizmos.primitive_2d(Circle::new(*r), gtf.translation().xy(), 0.0, Color::VIOLET);
+            },
+            ForceField::Neutral => {},
+        }
+    }
 }
