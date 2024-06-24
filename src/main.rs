@@ -5,6 +5,7 @@ mod my_images;
 mod particle;
 mod wall;
 mod signal;
+mod bound;
 
 use std::ops::RangeInclusive;
 
@@ -67,15 +68,15 @@ fn setup(mut commands: Commands) {
             ..default()
         },
         BloomSettings {
-            intensity: 0.9,
+            intensity: 0.5,
             low_frequency_boost: 0.1,
             high_pass_frequency: 0.6,
             prefilter_settings: BloomPrefilterSettings {
-                threshold: 0.25,
+                threshold: 0.0,
                 threshold_softness: 0.7,
             },
             composite_mode: bevy::core_pipeline::bloom::BloomCompositeMode::Additive,
-            low_frequency_boost_curvature: 0.5,
+            low_frequency_boost_curvature: 1.0,
             ..Default::default()
         },
     ));

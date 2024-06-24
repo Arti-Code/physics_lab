@@ -41,7 +41,7 @@ fn create_wall1(
         meshes, 
         materials, 
         Color::GRAY, 
-        vec2(0.0, 300.0), 
+        vec2(0.0, 270.0), 
         400.0, 
         5.0
     );
