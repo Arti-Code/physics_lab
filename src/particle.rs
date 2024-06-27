@@ -32,7 +32,6 @@ fn create_particles(
     mut meshes: ResMut<Assets<Mesh>>, 
     mut materials: ResMut<Assets<ColorMaterial>>, 
     diameter: Res<Diameter>,
-    //mut add_particle: ResMut<AddParticle>,
 ) {
     for _ in 0..12 {
         let particle = ParticleBundle::new_random(
@@ -47,7 +46,6 @@ fn create_particles(
                 Sensor,
                 Sleeping::disabled(),
                 ActiveCollisionTypes::all(),
-                //ReactionField,
             ));
         });
     }
@@ -62,14 +60,6 @@ fn create_particle(
 ) {
     if add_particle.is_high() {
         add_particle.set_low();
-        /* let colors = [
-            Color::GREEN,
-            Color::BLUE,
-            Color::RED,
-            Color::YELLOW,
-            Color::ORANGE,
-        ]; */
-        //let color = colors[thread_rng().gen_range(0..colors.len())];
         let particle = ParticleBundle::new_random(
             &mut meshes, 
             &mut materials, 
