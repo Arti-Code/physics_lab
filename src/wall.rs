@@ -20,14 +20,17 @@ impl Plugin for WallPlugin {
 fn create_wall0(
     mut commands: Commands, 
     meshes: ResMut<Assets<Mesh>>, 
-    materials: ResMut<Assets<ColorMaterial>>, 
+    materials: ResMut<Assets<ColorMaterial>>,
+    diameter: Res<Diameter>, 
 ) {
+    let width = diameter.w.clone();
+    let height = diameter.h.clone();
     let wall0 = WallBundle::new(
         meshes, 
         materials, 
         Color::GRAY, 
-        vec2(0.0, -300.0), 
-        400.0, 
+        vec2(0.0, *height.start()), 
+        *width.end(), 
         5.0
     );
     commands.spawn((wall0));
@@ -36,13 +39,16 @@ fn create_wall1(
     mut commands: Commands, 
     meshes: ResMut<Assets<Mesh>>, 
     materials: ResMut<Assets<ColorMaterial>>, 
+    diameter: Res<Diameter>, 
 ) {
+    let width = diameter.w.clone();
+    let height = diameter.h.clone();
     let wall0 = WallBundle::new(
         meshes, 
         materials, 
         Color::GRAY, 
-        vec2(0.0, 270.0), 
-        400.0, 
+        vec2(0.0, *height.end()-30.0), 
+        *width.end(), 
         5.0
     );
     commands.spawn((wall0));
@@ -51,14 +57,17 @@ fn create_wall2(
     mut commands: Commands, 
     meshes: ResMut<Assets<Mesh>>, 
     materials: ResMut<Assets<ColorMaterial>>, 
+    diameter: Res<Diameter>, 
 ) {
+    let width = diameter.w.clone();
+    let height = diameter.h.clone();
     let wall0 = WallBundle::new(
         meshes, 
         materials, 
         Color::GRAY, 
-        vec2(-400.0, 0.0), 
+        vec2(*width.start(), 0.0), 
         5.0, 
-        300.0
+        *height.end(),
     );
     commands.spawn((wall0));
 }
@@ -66,14 +75,17 @@ fn create_wall3(
     mut commands: Commands, 
     meshes: ResMut<Assets<Mesh>>, 
     materials: ResMut<Assets<ColorMaterial>>, 
+    diameter: Res<Diameter>, 
 ) {
+    let width = diameter.w.clone();
+    let height = diameter.h.clone();
     let wall0 = WallBundle::new(
         meshes, 
         materials, 
         Color::GRAY, 
-        vec2(400.0, 0.0), 
+        vec2(*width.end(), 0.0), 
         5.0, 
-        300.0
+        *height.end()
     );
     commands.spawn((wall0));
 }

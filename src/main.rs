@@ -28,12 +28,12 @@ use bevy_rapier2d::prelude::*;
 fn main() {
     App::new()
         .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
-        .insert_resource(Diameter { w: -400.0..=400.0, h: -300.0..=300.0 })
+        .insert_resource(Diameter { w: -600.0..=600.0, h: -400.0..=400.0 })
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "PHYSICS LAB".into(),
                 name: Some("physics lab".into()),
-                resolution: (800., 600.).into(),
+                resolution: (1200., 800.).into(),
                 present_mode: PresentMode::AutoVsync,
                 enabled_buttons: bevy::window::EnabledButtons {
                     maximize: false,
@@ -83,7 +83,7 @@ fn setup(mut commands: Commands) {
     //commands.spawn(cam);
 }
 
-#[derive(Resource)]
+#[derive(Resource, Clone)]
 struct Diameter {
     pub w: RangeInclusive<f32>,
     pub h: RangeInclusive<f32>,
